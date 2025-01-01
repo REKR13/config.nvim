@@ -331,6 +331,30 @@ require('lazy').setup({
   --
   -- Use the `dependencies` key to specify the dependencies of a particular plugin
 
+  { --for LaTeX
+    'lervag/vimtex',
+    lazy = false, -- we don't want to lazy load VimTeX
+    -- tag = "v2.15", -- uncomment to pin to a specific release
+    init = function()
+      -- VimTeX configuration goes here, e.g.
+      vim.g.vimtex_view_method = 'skim'
+      vim.g.vimtex_quickfix_autoclose_after_keystrokes = 1
+    end,
+  },
+
+  { --for jj escape and other combinations
+    'max397574/better-escape.nvim',
+    event = 'InsertEnter',
+    config = function()
+      require('better_escape').setup {
+        mapping = { 'jj' }, -- Keys to trigger escape
+        timeout = 300, -- Timeout in milliseconds
+        clear_empty_lines = true, -- Clear empty lines after escape
+        keys = '<Esc>', -- Key to send on escape
+      }
+    end,
+  },
+
   { --for autoclosing parens, quotation marks, etc.
     'm4xshen/autoclose.nvim',
     config = function()
@@ -645,7 +669,7 @@ require('lazy').setup({
         --
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         -- ts_ls = {},
-        --
+        texlab = {},
 
         lua_ls = {
           -- cmd = { ... },
@@ -917,15 +941,16 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = { 'latex', 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
         enable = true,
+        diable = { 'latex' },
         -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
         --  If you are experiencing weird indenting issues, add the language to
         --  the list of additional_vim_regex_highlighting and disabled languages for indent.
-        additional_vim_regex_highlighting = { 'ruby' },
+        additional_vim_regex_highlighting = { 'ruby', 'latex' },
       },
       indent = { enable = true, disable = { 'ruby' } },
     },
