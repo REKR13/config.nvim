@@ -102,7 +102,15 @@ vim.g.have_nerd_font = false
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
+vim.opt.signcolumn = 'number'
+
+-- Default spacing settings
+vim.opt.expandtab = true
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.softtabstop = 4
+vim.opt.autoindent = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -213,11 +221,6 @@ vim.keymap.set('n', '<leader>tb', function()
   end
 end, { desc = 'Toggle background mode' })
 
--- line settings (absolute, relative, or hybrid)
-vim.opt.number = true
-vim.opt.relativenumber = true
-vim.opt.signcolumn = 'number'
-
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -230,6 +233,22 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
+-- Create an autocommand to set filetype for .c0 and .c1 files
+vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
+  pattern = { '*.c0', '*.c1' },
+  callback = function()
+    vim.bo.filetype = 'c0_syntax'
+  end,
+})
+
+-- Optionally print a message when the syntax file is loaded (for debugging)
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'c0_syntax',
+  callback = function()
+    print 'Loaded c0_syntax for .c0/.c1 files'
+  end,
+})
+
 -- [[ Configure and install plugins ]]
 --
 --  To check the current status of your plugins, run
@@ -239,7 +258,7 @@ vim.opt.rtp:prepend(lazypath)
 --
 --  To update plugins you can run
 --    :Lazy update
---
+
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
@@ -1016,7 +1035,6 @@ require('lazy').setup({
   -- require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
-
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
   --
