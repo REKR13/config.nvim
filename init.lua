@@ -390,7 +390,54 @@ require('lazy').setup({
       }
     end,
   },
-
+  { --for built in terminal
+    'akinsho/toggleterm.nvim',
+    version = '*',
+    opts = {
+      size = function(term)
+        if term.direction == 'horizontal' then
+          return 15 -- 15 rows high for horizontal terminal
+        elseif term.direction == 'vertical' then
+          return vim.o.columns * 0.4 -- 40% of screen width for vertical terminal
+        end
+      end,
+      open_mapping = [[<c-\>]], -- Open with Ctrl+\
+      hide_numbers = true,
+      shade_terminals = true,
+      shading_factor = 2,
+      start_in_insert = true,
+      insert_mappings = true,
+      persist_size = true,
+      direction = 'horizontal', -- 'horizontal', 'vertical', 'float', 'tab'
+      close_on_exit = true,
+      shell = vim.o.shell,
+      float_opts = {
+        border = 'curved',
+        winblend = 0,
+        highlights = {
+          border = 'Normal',
+          background = 'Normal',
+        },
+      },
+      -- These settings ensure better compatibility with various terminals
+      -- including Ghostty
+      on_open = function(term)
+        -- Ensure proper terminal setup
+        vim.cmd 'startinsert!'
+        -- Set local options for better terminal experience
+        vim.opt_local.signcolumn = 'no'
+        vim.opt_local.foldcolumn = '0'
+        vim.opt_local.number = false
+        vim.opt_local.relativenumber = false
+      end,
+    },
+    keys = {
+      { '<C-\\>', desc = 'Toggle Terminal' },
+      { '<leader>tt', '<cmd>ToggleTerm direction=horizontal<cr>', desc = 'Toggle Terminal' },
+      { '<leader>tf', '<cmd>ToggleTerm direction=float<cr>', desc = 'Floating Terminal' },
+      { '<leader>tv', '<cmd>ToggleTerm direction=vertical<cr>', desc = 'Vertical Terminal' },
+    },
+  },
   { --for jj escape and other combinations
     'max397574/better-escape.nvim',
     event = 'InsertEnter',
@@ -400,26 +447,6 @@ require('lazy').setup({
         timeout = 300, -- Timeout in milliseconds
         clear_empty_lines = true, -- Clear empty lines after escape
         keys = '<Esc>', -- Key to send on escape
-      }
-    end,
-  },
-
-  { --for autoclosing parens, quotation marks, etc.
-    'm4xshen/autoclose.nvim',
-    config = function()
-      require('autoclose').setup {
-        keys = {
-          ['('] = { close = ')', escape = false, pair = '()', disabled_filetypes = {} },
-          ['['] = { close = ']', escape = false, pair = '[]', disabled_filetypes = {} },
-          ['{'] = { close = '}', escape = false, pair = '{}', disabled_filetypes = {} },
-          ['"'] = { close = '"', escape = true, pair = '""', disabled_filetypes = {} },
-          ["'"] = { close = "'", escape = true, pair = "''", disabled_filetypes = {} },
-          ['`'] = { close = '`', escape = true, pair = '``', disabled_filetypes = {} },
-        },
-        options = {
-          disabled_filetypes = { 'text', 'tex' },
-          disable_when_touch = false,
-        },
       }
     end,
   },
@@ -1032,7 +1059,7 @@ require('lazy').setup({
   -- require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
+  require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
